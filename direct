@@ -1,0 +1,205 @@
+Ланцюжок обов'язків - це патерн проектування, який дозволяє обробляти запити від клієнтів з використанням послідовності об'єктів, які мають можливість обробити запит.
+
+Для реалізації Ланцюжка обов'язків у системі онлайн консультацій, необхідно створити набір операторів, кожен з яких буде відповідати за певний тип запиту.
+Якщо оператор не може обробити запит, то він передає його до наступного оператора в ланцюжку.
+
+Побудуємо діаграму класів UML для реалізації Ланцюжка обов'язків у системі онлайн консультацій:
+       +----------------------+
+       |   IConsultationAgent |
+       +----------------------+
+                 ^
+                 |
+         +-------+---------+
+         |                 |
++-----------------+ +-----------------+
+|    ChatAgent    | |   CallAgent     |
++-----------------+ +-----------------+
+У цій діаграмі ми використовуємо інтерфейс IConsultationAgent як базовий клас для всіх операторів у ланцюжку обов'язків. Класи ChatAgent та CallAgent є конкретними реалізаціями цього інтерфейсу.
+
+Наступним кроком є реалізація програми з візуальним інтерфейсом, який дозволить користувачам взаємодіяти з системою онлайн консультацій.
+Цей інтерфейс може містити поля введення для імені користувача та тексту запиту, а також кнопку для відправки запиту.
+Коли користувач надсилає запит, він передається по ланцюжку обов'язків, поки не буде знайдено оператор, який може обробити запит.
+
+Код для додавання нового оператора до ланцюжка обов'язків:
+class Operator:
+    def __init__(self, name):
+        self.name = name
+        self.next = None
+        
+    def set_next(self, operator):
+        self.next = operator
+        
+    def handle_request(self, request):
+        pass
+
+
+class GeneralOperator(Operator):
+    def handle_request(self, request):
+        if request == 'General':
+            return f'{self.name} handles {request} inquiry.'
+        elif self.next is not None:
+            return self.next.handle_request(request)
+        else:
+            return f'{request} inquiry could not be handled.'
+
+
+class SalesOperator(Operator):
+    def handle_request(self, request):
+        if request == 'Sales':
+            return f'{self.name} handles {request} inquiry.'
+        elif self.next is not None:
+            return self.next.handle_request(request)
+        else:
+            return f'{request} inquiry could not be handled.'
+
+
+class TechnicalOperator(Operator):
+    def handle_request(self, request):
+        if request == 'Technical':
+            return f'{self.name} handles {request} inquiry.'
+        elif self.next is not None:
+            return self.next.handle_request(request)
+        else:
+            return f'{request} inquiry could not be handled.'
+
+
+class SupportOperator(Operator):
+    def handle_request(self, request):
+        if request == 'Support':
+            return f'{self.name} handles {request} inquiry.'
+        elif self.next is not None:
+            return self.next.handle_request(request)
+        else:
+            return f'{request} inquiry could not be handled.'
+Далі, можна створити ланцюжок обов'язків та додати до нього операторів в такому порядку: GeneralOperator, SalesOperator, TechnicalOperator, SupportOperator.
+general_operator = GeneralOperator('Mary')
+sales_operator = SalesOperator('John')
+technical_operator = TechnicalOperator('Andrew')
+support_operator = SupportOperator('Emily')
+
+general_operator.set_next(sales_operator)
+sales_operator.set_next(technical_operator)
+technical_operator.set_next(support_operator)
+
+Тепер можна перевірити, чи коректно працює ланцюжок обов'язків, викликавши метод handle_request на початковому операторі. Наприклад:
+request = 'Technical'
+print(general_operator.handle_request(request))  # Andrew handles Technical inquiry.
+
+request = 'Sales'
+print(general_operator.handle_request(request))  # John handles Sales inquiry.
+
+request = 'Marketing'
+print(general_operator.handle_request(request))  # Marketing inquiry could not be handled.
+
+Ось приклад коду для візуального інтерфейсу програми:
+from tkinter import *
+
+# Створення вікна
+root = Tk()
+root.title("Онлайн консультації")
+
+# Створення полів введення
+name_label = Label(root, text="Ім'я:")
+name_label.grid(row=0, column=0, padx=10, pady=10)
+name_entry = Entry(root, width=30)
+name_entry.grid(row=0, column=1, padx=10, pady=10)
+
+query_label = Label(root, text="Запит:")
+query_label.grid(row=1, column=0, padx=10, pady=10)
+query_entry = Entry(root, width=30)
+query_entry.grid(row=1, column=1, padx=10, pady=10)
+
+# Створення кнопки "Відправити запит"
+send_button = Button(root, text="Відправити запит")
+send_button.grid(row=2, column=1, padx=10, pady=10)
+
+# Запуск вікна
+root.mainloop()
+Цей код створить вікно програми з двома полями введення для імені користувача та запиту, а також кнопкою "Відправити запит".
+
+Далі, вам потрібно створити класи ланцюжка обов'язків та операторів для обробки запиту. Ось приклад коду для цього:
+class RequestHandler:
+    def __init__(self):
+        self.handler = Operator1(Operator2(Operator3(None)))
+        
+    def handle_request(self, request):
+        return self.handler.handle(request)
+
+class Operator:
+    def __init__(self, successor):
+        self.successor = successor
+    
+    def handle(self, request):
+        if self.successor is not None:
+            return self.successor.handle(request)
+        else:
+            return "Не знайдено оператора, який може обробити запит."
+
+class Operator1(Operator):
+    def handle(self, request):
+        if "оператор 1" in request:
+            return "Оператор 1 обробив запит."
+        else:
+            return super().handle(request)
+
+class Operator2(Operator):
+    def handle(self, request):
+        if "оператор 2" in request:
+            return "Оператор 2 обробив запит."
+        else:
+            return super().handle(request)
+
+class Operator3(Operator):
+    def handle(self, request):
+        if "оператор 3" in request:
+            return "Оператор 3 обробив запит."
+        else:
+            return super().handle(request)
+Ці класи створюють ланцюжок обов'язків для обробки запиту, який складається з трьох операторів.
+Кожен оператор може обробити запит, якщо він містить певний текст, або передати його на обробку наступному оператору
+Для того, щоб програма працювала, потрібно доповнити код для обробки запитів користувачів. 
+Можна додати функцію handle_request, яка буде приймати текст запиту від користувача і викликати метод handle ланцюжка обов'язків для обробки запиту.
+Ось як можна доповнити код програми:
+class Application:
+    def __init__(self, master):
+        self.master = master
+        master.title("Online Consultation")
+
+        self.label = tk.Label(master, text="Welcome to the Online Consultation!")
+        self.label.pack()
+
+        self.name_label = tk.Label(master, text="Name:")
+        self.name_label.pack()
+
+        self.name_entry = tk.Entry(master)
+        self.name_entry.pack()
+
+        self.request_label = tk.Label(master, text="Request:")
+        self.request_label.pack()
+
+        self.request_entry = tk.Entry(master)
+        self.request_entry.pack()
+
+        self.submit_button = tk.Button(master, text="Submit", command=self.submit_request)
+        self.submit_button.pack()
+
+    def submit_request(self):
+        name = self.name_entry.get()
+        request_text = self.request_entry.get()
+        request = Request(name, request_text)
+        operator = OperatorChain()
+        operator.handle(request)
+
+        response = request.response
+        if response is not None:
+            response_window = tk.Toplevel(self.master)
+            response_window.title("Response")
+            response_label = tk.Label(response_window, text=response)
+            response_label.pack()
+        else:
+            error_window = tk.Toplevel(self.master)
+            error_window.title("Error")
+            error_label = tk.Label(error_window, text="Sorry, we could not process your request at this time.")
+            error_label.pack()
+Цей код додає функцію submit_request, яка отримує тексти імені користувача та запиту, створює об'єкт запиту та передає його ланцюжку обов'язків. 
+Після обробки запиту, якщо існує відповідь, вона відображається у новому вікні, а якщо немає - відображається повідомлення про помилку
